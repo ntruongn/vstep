@@ -1,0 +1,599 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>VSTEP Part 2 Templates</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Sans:wght@400;500&family=Source+Serif+4:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column. Sticky bar (template tabs + display switches) over paragraph cards;
+   each sentence is a row: English, Vietnamese, then IPA chips. Yellow highlighter marks the blanks. */
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --ink: #17202e;
+  --muted: #58657a;
+  --line: #dde3ec;
+  --accent: #24478f;
+  --on-accent: #ffffff;
+  --accent-soft: #e8eefb;
+  --mark: #ffe58a;
+  --mark-ink: #3d3000;
+  --ipa: #2a5c8c;
+  --f-ui: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-read: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-ipa: "Noto Sans", "Segoe UI", "Helvetica Neue", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e131a;
+    --surface: #161d27;
+    --ink: #e7ecf3;
+    --muted: #9aa7ba;
+    --line: #27313e;
+    --accent: #9db9ff;
+    --on-accent: #0e1a33;
+    --accent-soft: #1d2a40;
+    --mark: #5b4a0d;
+    --mark-ink: #ffeaa6;
+    --ipa: #8fc3ee;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e131a;
+  --surface: #161d27;
+  --ink: #e7ecf3;
+  --muted: #9aa7ba;
+  --line: #27313e;
+  --accent: #9db9ff;
+  --on-accent: #0e1a33;
+  --accent-soft: #1d2a40;
+  --mark: #5b4a0d;
+  --mark-ink: #ffeaa6;
+  --ipa: #8fc3ee;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-ui);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  padding-bottom: 48px;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--bg);
+  z-index: 10;
+}
+.wrap {
+  max-width: 720px;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.hero { padding-block: 22px 14px; }
+h1 { margin: 0 0 6px; font-size: 1.5rem; line-height: 1.2; font-weight: 700; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); font-size: .94rem; max-width: 60ch; }
+
+/* sticky bar */
+.bar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 5;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  padding-block: 8px;
+}
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tab {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: .95rem;
+}
+.tab[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.toggles { display: flex; gap: 8px; margin-top: 8px; }
+.tog {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.tog[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+main { padding-block: 14px 0; }
+.uses { margin: 0 0 12px; color: var(--muted); font-size: .9rem; }
+.uses b { color: var(--ink); font-weight: 600; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+.panel-head {
+  margin: 0;
+  padding: 13px 14px 8px;
+  font-weight: 600;
+  font-size: .95rem;
+  color: var(--accent);
+}
+.panel-body { padding: 0 14px 14px; font-size: .92rem; }
+.panel-body p { margin: 0 0 8px; }
+.how dl { margin: 0; display: grid; gap: 10px; }
+.how dt { font-weight: 600; }
+.how dd { margin: 2px 0 0; color: var(--muted); }
+.how code { font-family: var(--f-read); font-size: .95em; color: var(--ink); }
+
+.field { display: grid; gap: 4px; margin-bottom: 12px; }
+.field label { font-weight: 600; font-size: .88rem; }
+.field label span { font-weight: 400; color: var(--muted); }
+.field input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-read);
+  font-size: 16px;
+}
+.field input::placeholder { color: var(--muted); opacity: .8; }
+
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 4px 0 6px; }
+.seg button {
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 10px;
+  font-size: .88rem;
+  font-weight: 500;
+}
+.seg button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.variant-note { margin: 0 0 4px; color: var(--muted); font-size: .85rem; }
+.variant-title { margin: 12px 0 0; font-size: .8rem; font-weight: 600; color: var(--muted); }
+
+/* paragraph cards */
+.para {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-top: 14px;
+  overflow: hidden;
+}
+.para > h2 {
+  margin: 0;
+  padding: 12px 14px 10px;
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--accent);
+}
+.sents { list-style: none; margin: 0; padding: 0; }
+.sent {
+  display: grid;
+  grid-template-columns: 1.4rem minmax(0, 1fr);
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--line);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.sent:active { background: var(--accent-soft); }
+.n { font-size: .75rem; color: var(--muted); padding-top: .35em; font-variant-numeric: tabular-nums; }
+.en { margin: 0; font-family: var(--f-read); font-size: 1.0625rem; line-height: 1.55; overflow-wrap: anywhere; }
+.vi { display: none; margin: 6px 0 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+.ipa { display: none; list-style: none; margin: 8px 0 0; padding: 0; flex-wrap: wrap; gap: 6px; }
+.ipa li { background: var(--accent-soft); border-radius: 6px; padding: 3px 8px; font-size: .8rem; line-height: 1.4; }
+.ipa b { font-weight: 600; margin-right: 4px; }
+.ipa i { font-style: normal; font-family: var(--f-ipa); color: var(--ipa); }
+[data-vi="on"] .sent:not(.flip) .vi, [data-vi="off"] .sent.flip .vi { display: block; }
+[data-ph="on"] .sent:not(.flip) .ipa, [data-ph="off"] .sent.flip .ipa { display: flex; }
+
+.slot {
+  background: var(--mark);
+  color: var(--mark-ink);
+  padding: 0 .25em;
+  border-radius: 3px;
+  font-weight: 600;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.vi .slot { font-weight: 500; }
+
+/* full essay */
+.essay-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.count { font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.copy {
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  font-size: .88rem;
+}
+#essayText p { margin: 0 0 12px; font-family: var(--f-read); font-size: 1.0625rem; line-height: 1.6; }
+#essayText p:last-child { margin-bottom: 0; }
+
+footer { padding-block: 22px 8px; color: var(--muted); font-size: .8rem; }
+footer p { margin: 0; max-width: 60ch; }
+
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  max-width: calc(100% - 32px);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: .85rem;
+  z-index: 20;
+}
+</style>
+
+<header class="wrap hero">
+  <h1>VSTEP Part 2 Templates</h1>
+  <p class="lede">Hai bài mẫu khoảng 300 từ, dùng từ vựng và câu đơn giản (A2–B1). Chỉ điền các chỗ tô vàng. Chạm vào một câu để ẩn hoặc hiện dịch nghĩa và phiên âm của riêng câu đó.</p>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="tabs" role="tablist" aria-label="Chọn template">
+      <button class="tab" id="tab-a" role="tab" data-tpl="a" type="button">A · Khách quan</button>
+      <button class="tab" id="tab-b" role="tab" data-tpl="b" type="button">B · Chủ quan</button>
+    </div>
+    <div class="toggles">
+      <button class="tog" id="tog-vi" type="button" aria-pressed="true">Dịch nghĩa</button>
+      <button class="tog" id="tog-ph" type="button" aria-pressed="true">Phiên âm</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <p class="uses" id="uses"></p>
+
+  <section class="panel how">
+    <h2 class="panel-head">Chọn mẫu và cách điền</h2>
+    <div class="panel-body" id="p-how">
+      <dl>
+        <div><dt>Chọn mẫu nào</dt><dd>Đề về chính phủ, xã hội, môi trường dùng mẫu A. Đề về lựa chọn, thói quen, cuộc sống cá nhân dùng mẫu B. Nếu phân vân, tự hỏi người quyết định là nhà nước và cộng đồng hay là cá nhân.</dd></div>
+        <div><dt>Đồng ý hoặc không đồng ý</dt><dd>Viết quan điểm thành một mệnh đề. Ví dụ: <code>governments should ban plastic bags in supermarkets</code></dd></div>
+        <div><dt>Chọn cái nào tốt hơn</dt><dd>Viết dạng X tốt hơn Y. Ví dụ: <code>working from home is better than working in an office</code></dd></div>
+        <div><dt>Đề hai vế</dt><dd>Gộp cả hai vế vào một mệnh đề. Ví dụ: <code>traffic jams are mainly caused by private cars, and better public transport is the best solution</code></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="panel" id="fillPanel">
+    <h2 class="panel-head">Điền chỗ trống để luyện</h2>
+    <div class="panel-body" id="fields"></div>
+  </section>
+
+  <div id="variantBox"></div>
+  <div id="content"></div>
+
+  <section class="panel" id="essayPanel" style="margin-top:14px">
+    <h2 class="panel-head">Bài hoàn chỉnh (tiếng Anh)</h2>
+    <div class="panel-body" id="p-essay">
+      <div class="essay-head">
+        <span class="count" id="count"></span>
+        <button class="copy" id="copyBtn" type="button">Sao chép bài</button>
+      </div>
+      <div id="essayText"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p>Phiên âm theo IPA kiểu Mỹ, soạn thủ công cho các từ khó đọc. Dấu ˈ đánh dấu âm nhấn chính. Nếu thấy lệch với từ điển, hãy tra lại.</p>
+</footer>
+
+<div id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function () {
+  var D = {"a":{"uses":"đề về môi trường, giao thông, kinh tế, tiết kiệm nước, chính sách, công nghệ, giáo dục.","slots":[{"key":"TOPIC","label":"[TOPIC] chủ đề","hint":"cụm danh từ hoặc V-ing","ph":"vd: saving water","est":3},{"key":"OPINION","label":"[OPINION] quan điểm","hint":"một mệnh đề đủ chủ ngữ và động từ","ph":"vd: the government should make rules to save water","est":12}],"variants":[{"key":"community","name":"Cộng đồng","uses":"mạng xã hội, công nghệ, quảng cáo, động vật, văn hóa, lối sống"},{"key":"gov","name":"Cộng đồng và chính phủ","uses":"giao thông, thuế, y tế, giáo dục công, môi trường, năng lượng"}],"sections":[{"id":"intro","label":"Mở bài","sents":[{"en":"Nowadays, many people talk about [TOPIC], and they have different ideas about it.","vi":"Ngày nay, nhiều người nói về [TOPIC], và họ có những ý kiến khác nhau về vấn đề này.","w":[["nowadays","ˈnaʊədeɪz"],["different","ˈdɪfrənt"]]},{"en":"In my opinion, [OPINION].","vi":"Theo ý kiến của tôi, [OPINION].","w":[["opinion","əˈpɪnjən"]]},{"en":"In this essay, I will explain my opinion. I will talk about what each person can do and how this helps the whole community.","vi":"Trong bài luận này, tôi sẽ giải thích ý kiến của mình. Tôi sẽ nói về những gì mỗi người có thể làm và điều này giúp ích cho cả cộng đồng như thế nào.","w":[["essay","ˈeseɪ"],["opinion","əˈpɪnjən"],["whole","hoʊl"],["community","kəˈmjuːnəti"]]}]},{"id":"b1","label":"Thân bài 1 · cá nhân","sents":[{"en":"First of all, this idea is important for our daily life.","vi":"Trước hết, ý tưởng này quan trọng đối với cuộc sống hằng ngày của chúng ta.","w":[["important","ɪmˈpɔːrtnt"],["daily","ˈdeɪli"]]},{"en":"Most people want to save money, stay healthy, and use their time well.","vi":"Hầu hết mọi người muốn tiết kiệm tiền, giữ gìn sức khỏe và sử dụng thời gian hiệu quả.","w":[["healthy","ˈhelθi"]]},{"en":"If they choose a good way to deal with [TOPIC], their life becomes easier.","vi":"Nếu họ chọn cách tốt để giải quyết [TOPIC], cuộc sống của họ sẽ dễ dàng hơn.","w":[["easier","ˈiːziər"]]},{"en":"For example, a family can change a few small habits at home. Then they spend less money and have fewer problems.","vi":"Ví dụ, một gia đình có thể thay đổi vài thói quen nhỏ ở nhà. Khi đó họ tiêu ít tiền hơn và gặp ít rắc rối hơn.","w":[["example","ɪɡˈzæmpl"],["habits","ˈhæbɪts"]]},{"en":"When many people do the same thing, the result can be very big.","vi":"Khi nhiều người cùng làm một việc, kết quả có thể rất lớn.","w":[]},{"en":"It does not cost much, and anyone can start today.","vi":"Nó không tốn nhiều chi phí, và bất kỳ ai cũng có thể bắt đầu ngay hôm nay.","w":[]},{"en":"So, I think every person should learn about this and take responsibility.","vi":"Vì vậy, tôi nghĩ mỗi người nên tìm hiểu về điều này và có trách nhiệm.","w":[["responsibility","rɪˌspɑːnsəˈbɪləti"]]}]},{"id":"b2","labelByVariant":{"community":"Thân bài 2 · cộng đồng","gov":"Thân bài 2 · cộng đồng và chính phủ"},"variants":{"community":[{"en":"Another reason is that this idea is also good for the whole community.","vi":"Một lý do khác là ý tưởng này cũng tốt cho cả cộng đồng.","w":[["another","əˈnʌðər"],["whole","hoʊl"],["community","kəˈmjuːnəti"]]},{"en":"What we do today changes not only our own life. It also changes the life of our neighbours, our coworkers, and children in the future.","vi":"Những gì chúng ta làm hôm nay không chỉ thay đổi cuộc sống của chính mình. Nó còn thay đổi cuộc sống của hàng xóm, đồng nghiệp và trẻ em trong tương lai.","w":[["neighbours","ˈneɪbərz"],["coworkers","ˈkoʊwɜːrkərz"],["future","ˈfjuːtʃər"]]},{"en":"For example, when a school or a company starts a good habit, other people see the good results and follow it.","vi":"Ví dụ, khi một trường học hoặc một công ty bắt đầu một thói quen tốt, những người khác thấy kết quả tốt và làm theo.","w":[["example","ɪɡˈzæmpl"]]},{"en":"Some people think that changing old habits is difficult at the beginning.","vi":"Một số người nghĩ rằng thay đổi thói quen cũ là khó lúc ban đầu.","w":[["habits","ˈhæbɪts"],["difficult","ˈdɪfɪkəlt"],["beginning","bɪˈɡɪnɪŋ"]]},{"en":"However, this problem is small when we compare it with the long-term benefits.","vi":"Tuy nhiên, vấn đề này nhỏ khi chúng ta so sánh nó với những lợi ích lâu dài.","w":[["however","haʊˈevər"],["compare","kəmˈper"],["benefits","ˈbenɪfɪts"]]},{"en":"Good habits can spread from one person to many others.","vi":"Thói quen tốt có thể lan từ một người sang nhiều người khác.","w":[["habits","ˈhæbɪts"]]},{"en":"So, everyone in the community should work together.","vi":"Vì vậy, mọi người trong cộng đồng nên cùng nhau làm việc.","w":[["community","kəˈmjuːnəti"],["together","təˈɡeðər"]]}],"gov":[{"en":"Another reason is that the government and the community can also help.","vi":"Một lý do khác là chính phủ và cộng đồng cũng có thể giúp đỡ.","w":[["another","əˈnʌðər"],["government","ˈɡʌvərnmənt"],["community","kəˈmjuːnəti"]]},{"en":"Some problems are too big for one person to solve, so we need clear rules, good plans, and education for everyone.","vi":"Một số vấn đề quá lớn để một người giải quyết, nên chúng ta cần quy định rõ ràng, kế hoạch tốt và giáo dục cho mọi người.","w":[["solve","sɑːlv"],["education","ˌedʒuˈkeɪʃn"]]},{"en":"For example, a city can make good rules and build better services, so people have a better life and lower costs.","vi":"Ví dụ, một thành phố có thể đặt ra quy định tốt và xây dựng dịch vụ tốt hơn, nhờ đó người dân có cuộc sống tốt hơn và chi phí thấp hơn.","w":[["example","ɪɡˈzæmpl"]]},{"en":"Some people worry that these plans take a lot of time and money.","vi":"Một số người lo rằng những kế hoạch này tốn nhiều thời gian và tiền bạc.","w":[["worry","ˈwɜːri"]]},{"en":"However, the cost is small when we compare it with the long-term benefits for society.","vi":"Tuy nhiên, chi phí là nhỏ khi chúng ta so sánh nó với những lợi ích lâu dài cho xã hội.","w":[["however","haʊˈevər"],["compare","kəmˈper"],["benefits","ˈbenɪfɪts"],["society","səˈsaɪəti"]]},{"en":"Good rules also show people what to do.","vi":"Quy định tốt cũng chỉ cho mọi người biết cần làm gì.","w":[]},{"en":"So, people and the government need to work together.","vi":"Vì vậy, người dân và chính phủ cần cùng nhau làm việc.","w":[["government","ˈɡʌvərnmənt"],["together","təˈɡeðər"]]}]}},{"id":"concl","label":"Kết bài","sents":[{"en":"In conclusion, [TOPIC] is an important problem, and everyone should think about it seriously.","vi":"Tóm lại, [TOPIC] là một vấn đề quan trọng, và mọi người nên suy nghĩ nghiêm túc về nó.","w":[["conclusion","kənˈkluːʒn"],["important","ɪmˈpɔːrtnt"],["seriously","ˈsɪriəsli"]]},{"en":"For these reasons, I strongly believe that [OPINION].","vi":"Vì những lý do này, tôi tin chắc rằng [OPINION].","w":[["strongly","ˈstrɔːŋli"]]}],"lastByVariant":{"gov":{"en":"If people take responsibility and the government gives good support, our society can have a better future.","vi":"Nếu mọi người có trách nhiệm và chính phủ hỗ trợ tốt, xã hội của chúng ta có thể có một tương lai tốt hơn.","w":[["responsibility","rɪˌspɑːnsəˈbɪləti"],["government","ˈɡʌvərnmənt"],["society","səˈsaɪəti"],["future","ˈfjuːtʃər"]]},"community":{"en":"If people take responsibility and communities give a good example to each other, our society can have a better future.","vi":"Nếu mọi người có trách nhiệm và các cộng đồng làm gương tốt cho nhau, xã hội của chúng ta có thể có một tương lai tốt hơn.","w":[["responsibility","rɪˌspɑːnsəˈbɪləti"],["example","ɪɡˈzæmpl"],["society","səˈsaɪəti"],["future","ˈfjuːtʃər"]]}}}]},"b":{"uses":"đề về thói quen, lựa chọn, hôn nhân, cách làm việc, lối sống, mua sắm.","slots":[{"key":"TOPIC","label":"[TOPIC] chủ đề","hint":"cụm danh từ hoặc V-ing","ph":"vd: working from home","est":3},{"key":"CHOICE","label":"[CHOICE] lựa chọn của bạn","hint":"một mệnh đề đủ chủ ngữ và động từ","ph":"vd: working from home is better than working in an office","est":12}],"sections":[{"id":"intro","label":"Mở bài","sents":[{"en":"People have different opinions about [TOPIC]. There is no perfect answer for everyone, because each person has different needs and habits.","vi":"Mỗi người có ý kiến khác nhau về [TOPIC]. Không có đáp án hoàn hảo cho tất cả mọi người, vì mỗi người có nhu cầu và thói quen khác nhau.","w":[["different","ˈdɪfrənt"],["perfect","ˈpɜːrfɪkt"],["habits","ˈhæbɪts"]]},{"en":"However, after thinking carefully, I believe that [CHOICE].","vi":"Tuy nhiên, sau khi suy nghĩ kỹ, tôi tin rằng [CHOICE].","w":[["however","haʊˈevər"],["carefully","ˈkerfəli"]]},{"en":"In this essay, I will explain my choice. I will talk about how it is useful and how it makes people feel.","vi":"Trong bài luận này, tôi sẽ giải thích lựa chọn của mình. Tôi sẽ nói về việc nó hữu ích như thế nào và nó khiến con người cảm thấy ra sao.","w":[["essay","ˈeseɪ"]]}]},{"id":"b1","label":"Thân bài 1 · thực tế","sents":[{"en":"First of all, this choice is more useful in everyday life.","vi":"Trước hết, lựa chọn này hữu ích hơn trong cuộc sống hằng ngày.","w":[["everyday","ˈevrideɪ"]]},{"en":"It helps people use their time, energy, and money in a better way, so they can focus on important things.","vi":"Nó giúp mọi người sử dụng thời gian, năng lượng và tiền bạc tốt hơn, để họ có thể tập trung vào những việc quan trọng.","w":[["energy","ˈenərdʒi"],["important","ɪmˈpɔːrtnt"]]},{"en":"For example, a student or a worker who makes this choice often feels more organized and has less stress.","vi":"Ví dụ, một học sinh hoặc một người đi làm đưa ra lựa chọn này thường cảm thấy ngăn nắp hơn và ít căng thẳng hơn.","w":[["example","ɪɡˈzæmpl"],["organized","ˈɔːrɡənaɪzd"],["stress","stres"]]},{"en":"After some time, these small advantages become good habits.","vi":"Sau một thời gian, những lợi thế nhỏ này trở thành thói quen tốt.","w":[["advantages","ədˈvæntɪdʒɪz"],["habits","ˈhæbɪts"]]},{"en":"It does not take much effort, and anyone can try it.","vi":"Nó không tốn nhiều công sức, và ai cũng có thể thử.","w":[]},{"en":"That is why I think this is a smart and realistic decision.","vi":"Đó là lý do tôi nghĩ đây là một quyết định thông minh và thực tế.","w":[["realistic","ˌriːəˈlɪstɪk"],["decision","dɪˈsɪʒn"]]}]},{"id":"b2","label":"Thân bài 2 · cảm xúc và sự phù hợp","sents":[{"en":"Another reason is that this choice is good for our feelings.","vi":"Một lý do khác là lựa chọn này tốt cho cảm xúc của chúng ta.","w":[["another","əˈnʌðər"],["feelings","ˈfiːlɪŋz"]]},{"en":"Every person has a different personality and a different life, so people are happier when they live in a way that fits them.","vi":"Mỗi người có tính cách và cuộc sống khác nhau, nên mọi người hạnh phúc hơn khi sống theo cách phù hợp với mình.","w":[["different","ˈdɪfrənt"],["personality","ˌpɜːrsəˈnæləti"]]},{"en":"For example, a person who makes this choice often feels more confident, relaxed, and happy with daily life.","vi":"Ví dụ, một người đưa ra lựa chọn này thường cảm thấy tự tin, thoải mái và hài lòng hơn với cuộc sống hằng ngày.","w":[["example","ɪɡˈzæmpl"],["confident","ˈkɑːnfɪdənt"],["relaxed","rɪˈlækst"],["daily","ˈdeɪli"]]},{"en":"It is true that the other choice also has some good points, such as being easier or more familiar at first.","vi":"Đúng là lựa chọn còn lại cũng có vài điểm tốt, chẳng hạn như dễ hơn hoặc quen thuộc hơn lúc đầu.","w":[["easier","ˈiːziər"],["familiar","fəˈmɪliər"]]},{"en":"However, these good points usually do not last long, so they are not as important as the long-term comfort of my choice.","vi":"Tuy nhiên, những điểm tốt này thường không kéo dài, nên chúng không quan trọng bằng sự thoải mái lâu dài của lựa chọn của tôi.","w":[["however","haʊˈevər"],["important","ɪmˈpɔːrtnt"],["comfort","ˈkʌmfərt"]]}]},{"id":"concl","label":"Kết bài","sents":[{"en":"In conclusion, I strongly believe that [CHOICE].","vi":"Tóm lại, tôi tin chắc rằng [CHOICE].","w":[["conclusion","kənˈkluːʒn"],["strongly","ˈstrɔːŋli"]]},{"en":"This choice is useful, good for our feelings, and suitable for our needs.","vi":"Lựa chọn này hữu ích, tốt cho cảm xúc của chúng ta và phù hợp với nhu cầu của chúng ta.","w":[["feelings","ˈfiːlɪŋz"],["suitable","ˈsuːtəbl"]]},{"en":"It fits my life, and I will keep doing it in the future.","vi":"Nó phù hợp với cuộc sống của tôi, và tôi sẽ tiếp tục làm như vậy trong tương lai.","w":[["future","ˈfjuːtʃər"]]},{"en":"Although people like different things, everyone should think carefully about their own situation, make a responsible decision, and respect other people’s choices.","vi":"Dù mọi người thích những thứ khác nhau, ai cũng nên suy nghĩ kỹ về hoàn cảnh của mình, đưa ra quyết định có trách nhiệm và tôn trọng lựa chọn của người khác.","w":[["although","ɔːlˈðoʊ"],["different","ˈdɪfrənt"],["carefully","ˈkerfəli"],["situation","ˌsɪtʃuˈeɪʃn"],["responsible","rɪˈspɑːnsəbl"],["decision","dɪˈsɪʒn"],["respect","rɪˈspekt"],["choices","ˈtʃɔɪsɪz"]]}]}]}};
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var root = document.documentElement;
+
+  var store = {
+    get: function (k, d) {
+      try { var v = localStorage.getItem("vstep:" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; }
+    },
+    set: function (k, v) { try { localStorage.setItem("vstep:" + k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  var vals = store.get("vals", {});
+  if (!vals || typeof vals !== "object") vals = {};
+  vals.a = (vals.a && typeof vals.a === "object") ? vals.a : {};
+  vals.b = (vals.b && typeof vals.b === "object") ? vals.b : {};
+  var variant = store.get("variant", "community");
+  if (variant !== "community" && variant !== "gov") variant = "community";
+
+  var S = {
+    tpl: "a",
+    vi: store.get("vi", true) !== false,
+    ph: store.get("ph", true) !== false,
+    variant: variant,
+    vals: vals,
+    flip: {}
+  };
+
+  function tplFromHash() { return location.hash === "#template-b" ? "b" : "a"; }
+
+  function sectionsOf(tpl) {
+    return D[tpl].sections.map(function (sec) {
+      var sents = sec.variants ? sec.variants[S.variant] : sec.sents;
+      if (sec.lastByVariant) sents = sents.concat([sec.lastByVariant[S.variant]]);
+      var label = sec.labelByVariant ? sec.labelByVariant[S.variant] : sec.label;
+      return { id: sec.id, label: label, sents: sents };
+    });
+  }
+
+  function frag(text, tpl, fillable) {
+    var f = document.createDocumentFragment();
+    text.split(/(\[[A-Z]+\])/).forEach(function (t) {
+      if (!t) return;
+      var m = /^\[([A-Z]+)\]$/.exec(t);
+      if (m) {
+        var v = fillable ? String(S.vals[tpl][m[1]] || "").trim() : "";
+        var s = document.createElement("span");
+        s.className = "slot";
+        s.textContent = v || t;
+        f.appendChild(s);
+      } else {
+        f.appendChild(document.createTextNode(t));
+      }
+    });
+    return f;
+  }
+
+  function fillText(text, tpl) {
+    return text.replace(/\[([A-Z]+)\]/g, function (m, k) {
+      return String(S.vals[tpl][k] || "").trim() || m;
+    });
+  }
+
+  function words(t) { var m = t.match(/[\p{L}\p{N}][\p{L}\p{N}’'-]*/gu); return m ? m.length : 0; }
+
+  function countWords(tpl) {
+    var est = {}, n = 0, anyEmpty = false;
+    D[tpl].slots.forEach(function (s) { est[s.key] = s.est; });
+    sectionsOf(tpl).forEach(function (sec) {
+      sec.sents.forEach(function (s) {
+        s.en.split(/(\[[A-Z]+\])/).forEach(function (t) {
+          var m = /^\[([A-Z]+)\]$/.exec(t);
+          if (m) {
+            var v = String(S.vals[tpl][m[1]] || "").trim();
+            if (v) n += words(v); else { n += est[m[1]]; anyEmpty = true; }
+          } else { n += words(t); }
+        });
+      });
+    });
+    return { n: n, estimated: anyEmpty };
+  }
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function renderChrome() {
+    var tpl = S.tpl, d = D[tpl];
+    ["a", "b"].forEach(function (k) {
+      var b = $("#tab-" + k);
+      b.setAttribute("aria-selected", k === tpl ? "true" : "false");
+    });
+    root.setAttribute("data-vi", S.vi ? "on" : "off");
+    root.setAttribute("data-ph", S.ph ? "on" : "off");
+    $("#tog-vi").setAttribute("aria-pressed", S.vi ? "true" : "false");
+    $("#tog-ph").setAttribute("aria-pressed", S.ph ? "true" : "false");
+
+    var uses = $("#uses");
+    uses.textContent = "";
+    uses.appendChild(el("b", "", "Dùng cho: "));
+    uses.appendChild(document.createTextNode(d.uses));
+
+    // fields
+    var fields = $("#fields");
+    fields.textContent = "";
+    fields.appendChild(el("p", "", "Gõ nội dung bằng tiếng Anh. Câu tiếng Anh bên dưới sẽ cập nhật ngay và số từ được tính lại."));
+    d.slots.forEach(function (sl) {
+      var wrapF = el("div", "field");
+      var lab = el("label", "", sl.label + " ");
+      lab.setAttribute("for", "f-" + tpl + "-" + sl.key);
+      lab.appendChild(el("span", "", "(" + sl.hint + ")"));
+      var inp = document.createElement("input");
+      inp.type = "text";
+      inp.id = "f-" + tpl + "-" + sl.key;
+      inp.placeholder = sl.ph;
+      inp.autocomplete = "off";
+      inp.setAttribute("autocapitalize", "off");
+      inp.spellcheck = false;
+      inp.value = S.vals[tpl][sl.key] || "";
+      inp.addEventListener("input", function () {
+        S.vals[tpl][sl.key] = inp.value;
+        store.set("vals", S.vals);
+        renderBody();
+      });
+      wrapF.appendChild(lab);
+      wrapF.appendChild(inp);
+      fields.appendChild(wrapF);
+    });
+
+    // variant (template A only)
+    var vb = $("#variantBox");
+    vb.textContent = "";
+    if (d.variants) {
+      vb.appendChild(el("p", "variant-title", "Chọn thân bài 2"));
+      var seg = el("div", "seg");
+      d.variants.forEach(function (v) {
+        var b = el("button", "", v.name);
+        b.type = "button";
+        b.setAttribute("aria-pressed", S.variant === v.key ? "true" : "false");
+        b.addEventListener("click", function () {
+          S.variant = v.key;
+          store.set("variant", v.key);
+          S.flip = {};
+          renderChrome();
+          renderBody();
+        });
+        seg.appendChild(b);
+      });
+      vb.appendChild(seg);
+      var cur = d.variants.filter(function (v) { return v.key === S.variant; })[0];
+      vb.appendChild(el("p", "variant-note", "Hợp với: " + cur.uses + ". Câu cuối của kết bài tự đổi theo lựa chọn này."));
+    }
+  }
+
+  function renderBody() {
+    var tpl = S.tpl;
+    var main = $("#content");
+    main.textContent = "";
+    sectionsOf(tpl).forEach(function (sec) {
+      var card = el("section", "para");
+      card.appendChild(el("h2", "", sec.label));
+      var ul = el("ol", "sents");
+      sec.sents.forEach(function (s, i) {
+        var key = tpl + ":" + S.variant + ":" + sec.id + ":" + i;
+        var li = el("li", "sent");
+        li.setAttribute("role", "button");
+        li.tabIndex = 0;
+        li.setAttribute("data-key", key);
+        if (S.flip[key]) li.classList.add("flip");
+        li.appendChild(el("span", "n", String(i + 1)));
+        var body = el("div", "");
+        var en = el("p", "en"); en.appendChild(frag(s.en, tpl, true));
+        var vi = el("p", "vi"); vi.appendChild(frag(s.vi, tpl, false));
+        body.appendChild(en);
+        body.appendChild(vi);
+        if (s.w.length) {
+          var ip = el("ul", "ipa");
+          s.w.forEach(function (w) {
+            var it = el("li", "");
+            it.appendChild(el("b", "", w[0]));
+            it.appendChild(el("i", "", "/" + w[1] + "/"));
+            ip.appendChild(it);
+          });
+          body.appendChild(ip);
+        }
+        li.appendChild(body);
+        ul.appendChild(li);
+      });
+      card.appendChild(ul);
+      main.appendChild(card);
+    });
+
+    // essay
+    var et = $("#essayText");
+    et.textContent = "";
+    sectionsOf(tpl).forEach(function (sec) {
+      var p = document.createElement("p");
+      sec.sents.forEach(function (s, i) {
+        if (i) p.appendChild(document.createTextNode(" "));
+        p.appendChild(frag(s.en, tpl, true));
+      });
+      et.appendChild(p);
+    });
+    var c = countWords(tpl);
+    $("#count").textContent = (c.estimated ? "Khoảng " : "") + c.n + " từ" + (c.estimated ? " (ô chưa điền tính theo số từ trung bình)" : "");
+  }
+
+  function render() { renderChrome(); renderBody(); }
+
+  var toastTimer;
+  function toast(msg) {
+    var t = $("#toast");
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.hidden = true; }, 2400);
+  }
+
+  function copyEssay() {
+    var tpl = S.tpl;
+    var text = sectionsOf(tpl).map(function (sec) {
+      return sec.sents.map(function (s) { return fillText(s.en, tpl); }).join(" ");
+    }).join("\n\n");
+    var done = function () { toast("Đã sao chép bài"); };
+    var fallback = function () {
+      var box = $("#essayText");
+      var r = document.createRange();
+      r.selectNodeContents(box);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(r);
+      toast("Đã chọn bài, hãy nhấn giữ để sao chép");
+    };
+    try {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } catch (e) { fallback(); }
+  }
+
+  // events
+  document.addEventListener("click", function (e) {
+    var head = e.target.closest(".panel-head");
+    if (head) {
+      var pb = document.getElementById(head.getAttribute("aria-controls"));
+      var isOpen = head.getAttribute("aria-expanded") === "true";
+      head.setAttribute("aria-expanded", isOpen ? "false" : "true");
+      if (pb) pb.hidden = isOpen;
+      return;
+    }
+    var tab = e.target.closest(".tab");
+    if (tab) { location.hash = "template-" + tab.getAttribute("data-tpl"); return; }
+    var sent = e.target.closest(".sent");
+    if (sent) {
+      var k = sent.getAttribute("data-key");
+      S.flip[k] = !S.flip[k];
+      sent.classList.toggle("flip", !!S.flip[k]);
+    }
+  });
+  document.addEventListener("keydown", function (e) {
+    if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("sent")) {
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+  $("#tog-vi").addEventListener("click", function () {
+    S.vi = !S.vi; store.set("vi", S.vi); S.flip = {}; render();
+  });
+  $("#tog-ph").addEventListener("click", function () {
+    S.ph = !S.ph; store.set("ph", S.ph); S.flip = {}; render();
+  });
+  $("#copyBtn").addEventListener("click", copyEssay);
+  window.addEventListener("hashchange", function () {
+    S.tpl = tplFromHash(); S.flip = {}; render();
+    window.scrollTo(0, 0);
+  });
+
+  S.tpl = tplFromHash();
+  render();
+})();
+</script>
+
+</body></html>
